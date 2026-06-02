@@ -182,7 +182,7 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
 #zoom-ctrl button:hover{ background:rgba(188,19,254,0.28); color:#fff; }
 #zoom-ctrl #zoom-val{ min-width:54px; font-size:11px; }
 #m-sim,#m-undo{ display:none; }
-#m-sim button,#m-undo button{ min-width:36px; height:30px; border:none; background:rgba(188,19,254,0.12); color:#dfe6ee; border-radius:7px; font-family:'Orbitron',monospace; font-size:15px; font-weight:700; cursor:pointer; transition:background .14s; }
+#m-sim button,#m-undo button{ min-width:33px; height:30px; border:none; background:rgba(188,19,254,0.12); color:#dfe6ee; border-radius:7px; font-family:'Orbitron',monospace; font-size:14px; font-weight:700; cursor:pointer; transition:background .14s; }
 #m-sim button:hover,#m-undo button:hover{ background:rgba(188,19,254,0.3); color:#fff; }
 #m-sim #m-play{ color:var(--green); } #m-sim #m-reset{ color:var(--gold); }
 #mtabs{ display:none; }
@@ -197,10 +197,11 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
   #forces-menu{ top:120px !important; right:8px !important; }
   #zoom-ctrl{ top:120px !important; left:8px !important; right:auto !important; bottom:auto !important; }
   #pause-overlay,#conn-hint{ bottom:108px !important; }
-  /* barra de ferramentas de baixo um pouco mais alta */
-  #toolbar{ height:70px !important; max-height:70px !important; }
+  /* barra de ferramentas de baixo um pouco mais alta; sem backdrop-filter (ele criava
+     containing-block que quebrava o position:fixed dos painéis de config) */
+  #toolbar{ height:70px !important; max-height:70px !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; background:rgba(10,12,20,0.95) !important; }
   /* play/pause/reset flutuando ENTRE o zoom e as forças */
-  #m-sim{ display:flex !important; position:fixed; top:120px; left:50%; transform:translateX(-50%); z-index:240; gap:5px; background:rgba(14,17,26,0.9); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:4px; box-shadow:0 4px 16px rgba(0,0,0,0.42); backdrop-filter:blur(6px); }
+  #m-sim{ display:flex !important; position:fixed; top:120px; left:calc(50% + 22px); transform:translateX(-50%); z-index:240; gap:4px; background:rgba(14,17,26,0.9); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:4px; box-shadow:0 4px 16px rgba(0,0,0,0.42); backdrop-filter:blur(6px); }
   /* desfazer/refazer como setas ABAIXO do zoom */
   #m-undo{ display:flex !important; position:fixed; top:160px; left:8px; z-index:240; gap:5px; background:rgba(14,17,26,0.9); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:4px; box-shadow:0 4px 16px rgba(0,0,0,0.42); backdrop-filter:blur(6px); }
   /* controles originais saíram da barra de baixo (foram p/ cima) */
