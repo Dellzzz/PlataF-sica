@@ -181,6 +181,10 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
 #zoom-ctrl button{ min-width:30px; height:30px; border:none; background:rgba(188,19,254,0.1); color:#dfe6ee; border-radius:7px; font-family:'Orbitron',monospace; font-size:14px; font-weight:700; cursor:pointer; transition:background .14s; }
 #zoom-ctrl button:hover{ background:rgba(188,19,254,0.28); color:#fff; }
 #zoom-ctrl #zoom-val{ min-width:54px; font-size:11px; }
+#m-sim,#m-undo{ display:none; }
+#m-sim button,#m-undo button{ min-width:36px; height:30px; border:none; background:rgba(188,19,254,0.12); color:#dfe6ee; border-radius:7px; font-family:'Orbitron',monospace; font-size:15px; font-weight:700; cursor:pointer; transition:background .14s; }
+#m-sim button:hover,#m-undo button:hover{ background:rgba(188,19,254,0.3); color:#fff; }
+#m-sim #m-play{ color:var(--green); } #m-sim #m-reset{ color:var(--gold); }
 #mtabs{ display:none; }
 @media (max-width:640px),(pointer:coarse){
   #mtabs{ display:flex; position:fixed; top:0; left:0; right:0; height:42px; z-index:235; gap:6px; padding:6px 8px; padding-top:max(6px,env(safe-area-inset-top)); background:rgba(8,10,16,0.94); backdrop-filter:blur(8px); align-items:center; border-bottom:1px solid var(--border); }
@@ -189,10 +193,26 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
   /* As duas barras superiores ficam OCULTAS e abrem como menu suspenso */
   #instr-panel,#topbar{ display:none !important; top:48px !important; bottom:auto !important; z-index:236 !important; background:rgba(10,12,20,0.97) !important; }
   #instr-panel.mopen,#topbar.mopen{ display:flex !important; }
-  #statusbar{ top:auto !important; bottom:66px !important; }
+  #statusbar{ top:auto !important; bottom:78px !important; }
   #forces-menu{ top:120px !important; right:8px !important; }
   #zoom-ctrl{ top:120px !important; left:8px !important; right:auto !important; bottom:auto !important; }
-  #pause-overlay,#conn-hint{ bottom:96px !important; }
+  #pause-overlay,#conn-hint{ bottom:108px !important; }
+  /* barra de ferramentas de baixo um pouco mais alta */
+  #toolbar{ height:70px !important; max-height:70px !important; }
+  /* play/pause/reset flutuando ENTRE o zoom e as forças */
+  #m-sim{ display:flex !important; position:fixed; top:120px; left:50%; transform:translateX(-50%); z-index:240; gap:5px; background:rgba(14,17,26,0.9); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:4px; box-shadow:0 4px 16px rgba(0,0,0,0.42); backdrop-filter:blur(6px); }
+  /* desfazer/refazer como setas ABAIXO do zoom */
+  #m-undo{ display:flex !important; position:fixed; top:160px; left:8px; z-index:240; gap:5px; background:rgba(14,17,26,0.9); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:4px; box-shadow:0 4px 16px rgba(0,0,0,0.42); backdrop-filter:blur(6px); }
+  /* controles originais saíram da barra de baixo (foram p/ cima) */
+  #toolbar .ctrl-row,#toolbar #btn-reset,#toolbar .undo-row{ display:none !important; }
+  /* menus de config (canhão/motor/mola) flutuando ABAIXO das forças */
+  #cannon-panel,#motor-panel,#spring-panel{ position:fixed !important; top:160px !important; right:8px !important; left:auto !important; bottom:auto !important; z-index:250; width:188px !important; max-width:62vw; flex-direction:column !important; align-items:stretch !important; gap:6px !important; background:rgba(14,17,26,0.96); border:1px solid rgba(255,255,255,0.14); border-radius:11px; padding:10px; box-shadow:0 8px 28px rgba(0,0,0,0.55); backdrop-filter:blur(6px); }
+  #cannon-panel .tb-div,#motor-panel .tb-div,#spring-panel .tb-div{ display:none !important; }
+  #cannon-panel .tb-label,#motor-panel .tb-label,#spring-panel .tb-label{ display:block !important; font-size:9px; letter-spacing:1px; color:#7df9ff; text-align:center; margin-bottom:2px; }
+  #motor-panel .motor-row{ display:flex !important; }
+  #motor-panel .mot-wrap{ width:100% !important; height:auto !important; }
+  #motor-torque-slider,#motor-speed-slider{ width:100% !important; }
+  #btn-motor-dir{ width:100% !important; height:24px !important; font-size:9px !important; }
 }
 #spring-panel{ display:none; flex-direction:column; gap:6px; }
 .springk-row{ display:flex; gap:4px; }
@@ -326,6 +346,15 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
     <div class="fm-note">Selecione um objeto com a ferramenta Seleção (V) para ver o diagrama.</div>
   </div>
 </div>
+<div id="m-sim">
+  <button id="m-play" onclick="setRunning(true)" data-tip="Play">▶</button>
+  <button onclick="setRunning(false)" data-tip="Pausar">⏸</button>
+  <button id="m-reset" onclick="resetWorld()" data-tip="Resetar">↺</button>
+</div>
+<div id="m-undo">
+  <button onclick="undo()" data-tip="Desfazer">↩</button>
+  <button onclick="redo()" data-tip="Refazer">↪</button>
+</div>
 <div id="instr-panel">
   <div class="tb-label">TEMPO</div>
   <button class="tool-btn" data-tip="Zerar o cronômetro" onclick="resetTimer()" style="color:#ffd166"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 11V7.5M10 11l2.5 1.5M8 2.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="btn-lbl">Zerar</span></button>
@@ -350,7 +379,7 @@ const { Engine, Render, Runner, Bodies, Body, Constraint, Composite, Mouse, Mous
 if (window.decomp) Common.setDecomp(window.decomp);
 const isMobile = window.innerWidth <= 640 || window.matchMedia('(pointer:coarse)').matches;
 let W = window.innerWidth, H = window.innerHeight;
-function getRH() { return isMobile ? H - 68 : H; }
+function getRH() { return isMobile ? H - 76 : H; }
 const engine = Engine.create({ gravity: { x: 0, y: 1 } });
 // CALIBRAÇÃO FÍSICA: com passo fixo (1/60 s) e 100 px/m, a queda livre integra
 // a = g·scale·Δt²·(unidades). Com scale=0.00098 → exatamente 9,8 m/s² em 1.0g,
