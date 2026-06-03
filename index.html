@@ -169,6 +169,19 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
 #forces-menu-btn.active{ background:rgba(255,107,107,0.18); border-color:#ff6b6b; color:#fff; box-shadow:0 0 12px rgba(255,107,107,0.4); }
 #forces-menu-panel{ display:none; margin-top:6px; background:rgba(14,17,26,0.96); border:1px solid rgba(255,255,255,0.12); border-radius:11px; padding:9px; min-width:212px; box-shadow:0 8px 28px rgba(0,0,0,0.55); backdrop-filter:blur(6px); }
 #forces-menu-panel.open{ display:block; }
+#tut-menu{ position:fixed; top:96px; right:10px; z-index:259; font-family:'Poppins',sans-serif; }
+#tut-menu-btn{ background:rgba(20,24,36,0.92); color:#7CFFB2; border:1px solid rgba(124,255,178,0.45); border-radius:9px; padding:7px 11px; font-family:'Orbitron',monospace; font-size:11px; font-weight:700; letter-spacing:1px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.4); transition:all .15s; }
+#tut-menu-btn:hover,#tut-menu-btn.active{ border-color:#7CFFB2; box-shadow:0 0 12px rgba(124,255,178,0.4); }
+#tut-menu-panel{ display:none; margin-top:6px; background:rgba(14,17,26,0.96); border:1px solid rgba(255,255,255,0.12); border-radius:11px; padding:9px; min-width:212px; box-shadow:0 8px 28px rgba(0,0,0,0.55); backdrop-filter:blur(6px); }
+#tut-menu-panel.open{ display:block; }
+#tut-menu-panel .tm-head{ font-family:'Orbitron',monospace; font-size:10px; color:#7df9ff; letter-spacing:.5px; margin-bottom:7px; text-align:center; }
+#tut-menu-panel .tm-opt{ display:block; width:100%; text-align:left; margin-top:5px; background:rgba(124,255,178,0.1); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:9px 10px; font-family:'Poppins',sans-serif; font-size:12.5px; cursor:pointer; }
+#tut-menu-panel .tm-opt:hover{ background:rgba(124,255,178,0.22); }
+/* menus de config recolhíveis (clicar no título suspende/expande) */
+#cannon-panel > .tb-label,#motor-panel > .tb-label,#spring-panel > .tb-label{ cursor:pointer; user-select:none; }
+#cannon-panel > .tb-label::after,#motor-panel > .tb-label::after,#spring-panel > .tb-label::after{ content:' ▾'; opacity:.65; }
+.cfg-collapsed > .tb-label::after{ content:' ▸'; }
+.cfg-collapsed > *:not(.tb-label){ display:none !important; }
 #forces-menu .fm-head{ font-family:'Orbitron',monospace; font-size:9px; letter-spacing:1px; color:#7df9ff; text-transform:uppercase; margin:2px 2px 8px; opacity:.85; }
 #forces-menu .fm-row{ display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:7px; font-size:12.5px; color:#dfe6ee; cursor:pointer; }
 #forces-menu .fm-row:hover{ background:rgba(255,255,255,0.06); }
@@ -206,6 +219,11 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
   #m-undo{ display:flex !important; position:fixed; top:160px; left:8px; z-index:240; gap:5px; background:rgba(14,17,26,0.9); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:4px; box-shadow:0 4px 16px rgba(0,0,0,0.42); backdrop-filter:blur(6px); }
   /* controles originais saíram da barra de baixo (foram p/ cima) */
   #toolbar .ctrl-row,#toolbar #btn-reset,#toolbar .undo-row{ display:none !important; }
+  /* tutoriais no mobile: botão entre as abas, painel suspenso abaixo do #mtabs */
+  #tut-menu{ top:48px !important; right:auto !important; left:50% !important; transform:translateX(-50%); z-index:236; }
+  #tut-menu-btn{ display:none; }
+  #tut-menu-panel{ margin-top:0; min-width:74vw; }
+  #mtab-tut{ flex:0 0 auto !important; padding:0 13px !important; font-size:15px !important; }
   /* menus de config (canhão/motor/mola) flutuando ABAIXO das forças */
   #cannon-panel,#motor-panel,#spring-panel{ position:fixed !important; top:160px !important; right:8px !important; left:auto !important; bottom:auto !important; z-index:250; width:188px !important; max-width:62vw; flex-direction:column !important; align-items:stretch !important; gap:6px !important; background:rgba(14,17,26,0.96); border:1px solid rgba(255,255,255,0.14); border-radius:11px; padding:10px; box-shadow:0 8px 28px rgba(0,0,0,0.55); backdrop-filter:blur(6px); }
   #cannon-panel .tb-div,#motor-panel .tb-div,#spring-panel .tb-div{ display:none !important; }
@@ -223,6 +241,10 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
 #toolbar .tb-label{ color:rgba(216,202,240,0.88); }
 #toolbar .btn-lbl{ color:#d6dce6; opacity:0.95; }
 #cannon-panel{display:none;flex-direction:column;align-items:stretch;gap:2px;width:100%}
+#motor-panel,#spring-panel,#cannon-panel{ position:fixed; left:calc(var(--tbw) + 16px); bottom:18px; top:auto; right:auto; z-index:205; width:158px; box-sizing:border-box; background:rgba(12,15,24,0.97); border:1px solid var(--border); border-radius:13px; padding:11px 12px; box-shadow:var(--glow),0 8px 26px rgba(0,0,0,0.5); }
+#motor-panel .tb-div,#spring-panel .tb-div,#cannon-panel .tb-div{ display:none; }
+#motor-panel .tb-label,#spring-panel .tb-label,#cannon-panel .tb-label{ display:block; font-size:9px; letter-spacing:1px; color:#7df9ff; text-align:center; margin-bottom:5px; }
+#cannon-panel .cn-slider,#motor-panel .mot-wrap,#motor-panel input[type=range]{ width:100%; box-sizing:border-box; }
 #cannon-panel .cn-row{display:flex;justify-content:space-between;align-items:center;font-size:8.5px;color:var(--muted);padding:0 1px}
 #cannon-panel .cn-row span{color:#7df9ff}
 #cannon-panel .cn-num{width:30px;background:rgba(125,249,255,0.08);border:1px solid rgba(125,249,255,0.35);border-radius:4px;color:#7df9ff;font-family:'Orbitron',monospace;font-size:9px;text-align:center;padding:1px 0;margin-right:1px}
@@ -275,9 +297,6 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
   <div class="set-row"><span>Vetores</span><span id="set-vec">desligado</span></div>
   <div class="set-row"><span>Atrito (selecionado)</span><span id="set-fric-val" style="color:#ffd166">—</span></div>
   <div style="padding:1px 2px 4px"><input type="range" id="set-fric" min="0" max="1.5" step="0.05" value="0.6" style="width:100%" oninput="setFrictionSelected(+this.value)"></div>
-  <div style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;font-size:10px;color:var(--muted);letter-spacing:.5px">TUTORIAIS GUIADOS</div>
-  <button class="ctrl-btn" style="width:100%;justify-content:center;margin-top:4px;border-color:rgba(68,255,136,0.45);color:var(--green)" onclick="startTutorial('carro')">🚗 Montar um carro funcional</button>
-  <button class="ctrl-btn" style="width:100%;justify-content:center;margin-top:4px;border-color:rgba(255,153,51,0.45);color:var(--orange)" onclick="startTutorial('engrenagens')">⚙️ Sistema de engrenagens</button>
   <button class="ctrl-btn" style="width:100%;justify-content:center;margin-top:8px" onclick="toggleShortcuts()">⌨ Ver atalhos do teclado</button>
   <div id="shortcuts-list" style="display:none;font-size:10px;color:var(--muted);line-height:1.9;border-top:1px solid var(--border);padding-top:8px">
     <b style="color:var(--fg)">Ferramentas</b><br>
@@ -332,14 +351,14 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
   <div class="grav-ctrl"><label>GRAV.</label><div class="grav-wrap"><input type="range" id="gravity-slider" min="-2" max="4" step="0.1" value="1" oninput="setGravity(+this.value)"></div><span id="gravity-val">1.0g</span></div>
   <div class="time-ctrl"><label>VELOCIDADE</label><input type="range" id="time-scale" min="0.1" max="2" step="0.05" value="1" oninput="setTimeScale(+this.value)"><span id="time-val">1.0x</span></div>
   <div class="fluid-ctrl"><label>FLUIDO</label><input type="range" id="fluid-quality" min="40" max="120" step="10" value="80" oninput="setFluidQuality(+this.value)"><span id="fluid-val">80 part.</span></div>
-  <div class="tb-div"></div>
+</div>
   <div id="motor-panel"><div class="tb-div"></div><div class="tb-label">MOTOR</div><div class="motor-row" style="font-size:8.5px;color:var(--muted);gap:4px"><span>Torque</span><span id="motor-torque-val" style="color:#44ff88">0.50</span></div><div class="mot-wrap"><input type="range" id="motor-torque-slider" min="0.05" max="1" step="0.05" value="0.5" oninput="setMotorTorque(+this.value)"></div><div class="motor-row" style="font-size:8.5px;color:var(--muted);gap:4px"><span>Vel. livre</span><span id="motor-speed-val" style="color:#44ff88">0.080</span></div><div class="mot-wrap"><input type="range" id="motor-speed-slider" min="0.01" max="0.25" step="0.005" value="0.08" oninput="setMotorFreeSpeed(+this.value)"></div><button id="btn-motor-dir" onclick="toggleMotorDir()">↻ CW</button></div>
   <div id="spring-panel"><div class="tb-div"></div><div class="tb-label">MOLA · k (N/m)</div><div class="springk-row"><button class="springk-btn" data-k="100" onclick="setSpringK(100)">100</button><button class="springk-btn active" data-k="300" onclick="setSpringK(300)">300</button><button class="springk-btn" data-k="500" onclick="setSpringK(500)">500</button></div></div>
   <div id="cannon-panel"><div class="tb-div"></div><div class="tb-label">CANHÃO</div><div class="cn-row"><span>Ângulo</span><span><input type="number" id="cannon-angle-num" class="cn-num" min="0" max="180" value="45" onchange="setCannonAngle(+this.value)">°</span></div><input class="cn-slider" type="range" id="cannon-angle-slider" min="0" max="180" step="1" value="45" oninput="setCannonAngle(+this.value)"><div class="cn-row"><span>Veloc.</span><span><input type="number" id="cannon-power-num" class="cn-num" min="1" max="40" value="12" onchange="setCannonPower(+this.value)"> m/s</span></div><input class="cn-slider" type="range" id="cannon-power-slider" min="2" max="40" step="1" value="12" oninput="setCannonPower(+this.value)"><button id="btn-cannon-ground" onclick="toggleCannonGround()">⊿ Saída: boca do cano</button><button id="btn-cannon-track" onclick="toggleCannonTrack()">📍 Régua: desligada</button><button id="btn-cannon-fire" onclick="launchCannon()">🚀 LANÇAR</button></div>
-</div>
 <div id="pause-overlay">⏸  PAUSADO — MODO EDIÇÃO</div>
 <div id="mtabs">
   <button id="mtab-tools" onclick="mobilePanel('tools')">▤ FERRAMENTAS</button>
+  <button id="mtab-tut" onclick="toggleTutMenu()" data-tip="Tutoriais">🎓</button>
   <button id="mtab-instr" onclick="mobilePanel('instr')">📐 MEDIDAS</button>
 </div>
 <div id="zoom-ctrl">
@@ -362,6 +381,14 @@ body[data-tool="pulley"] #canvas{cursor:crosshair}
     <label class="fm-row"><input type="checkbox" data-f="v" onchange="setForceFilter('v',this.checked)"><span class="fm-sw" style="background:#44ff88"></span>Velocidade (v)</label>
     <label class="fm-row"><input type="checkbox" data-f="a" onchange="setForceFilter('a',this.checked)"><span class="fm-sw" style="background:#b388ff"></span>Aceleração (a)</label>
     <div class="fm-note">Selecione um objeto com a ferramenta Seleção (V) para ver o diagrama.</div>
+  </div>
+</div>
+<div id="tut-menu">
+  <button id="tut-menu-btn" onclick="toggleTutMenu()" data-tip="Tutoriais guiados">🎓 TUTORIAIS ▾</button>
+  <div id="tut-menu-panel">
+    <div class="tm-head">Tutoriais guiados</div>
+    <button class="tm-opt" onclick="startTutorial('carro')">🚗 Montar um carro funcional</button>
+    <button class="tm-opt" onclick="startTutorial('engrenagens')">⚙️ Sistema de engrenagens</button>
   </div>
 </div>
 <div id="m-sim">
@@ -897,12 +924,20 @@ function snapFreehand(){
 }
 function checkFreehandHold(ctx){
   if(!(isMobile && activeTool==='freehand' && isDrawing && isPointerDown && freehandHoldT && freehandPts.length>=8)) return;
-  const held=performance.now()-freehandHoldT, prog=Math.min(1,held/2000), lp=freehandPts[freehandPts.length-1];
+  const held=performance.now()-freehandHoldT, prog=Math.min(1,held/1500), lp=freehandPts[freehandPts.length-1];
+  const sh=recognizeShape(freehandPts);
+  if(sh){
+    ctx.save(); ctx.globalAlpha=0.3+prog*0.55; ctx.strokeStyle='#bc6bff'; ctx.lineWidth=2.6; ctx.setLineDash([7,5]); ctx.shadowBlur=11; ctx.shadowColor='#bc6bff'; ctx.beginPath();
+    if(sh.type==='circle') ctx.arc(sh.cx,sh.cy,sh.r,0,2*Math.PI);
+    else if(sh.type==='square') ctx.rect(sh.x1,sh.y1,sh.x2-sh.x1,sh.y2-sh.y1);
+    else { const v=sh.verts; ctx.moveTo(v[0].x,v[0].y); ctx.lineTo(v[1].x,v[1].y); ctx.lineTo(v[2].x,v[2].y); ctx.closePath(); }
+    ctx.stroke(); ctx.restore();
+  }
   ctx.save(); ctx.shadowBlur=8; ctx.shadowColor='#7df9ff';
   ctx.strokeStyle='rgba(125,249,255,0.25)'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(lp.x,lp.y,20,0,2*Math.PI); ctx.stroke();
   ctx.strokeStyle='#7df9ff'; ctx.lineWidth=3.5; ctx.beginPath(); ctx.arc(lp.x,lp.y,20,-Math.PI/2,-Math.PI/2+prog*2*Math.PI); ctx.stroke();
   ctx.restore();
-  if(held>=2000) snapFreehand();
+  if(held>=1500) snapFreehand();
 }
 function bodyAt(x,y) { return Query.point(Composite.allBodies(world).filter(b=>!b.isStatic||pinnedBodies.has(b)),{x,y})[0]||null; }
 function bodyAtDynamic(x,y) { return Query.point(Composite.allBodies(world).filter(b=>!b.isStatic),{x,y})[0]||null; }
@@ -1648,7 +1683,9 @@ const TUTORIALS = {
   ]},
 };
 let tutorial = null;
-function startTutorial(key){ if(!TUTORIALS[key]) return; tutorial={ key, steps:TUTORIALS[key].steps, i:0 }; const sp=document.getElementById('settings-panel'); if(sp) sp.classList.remove('open'); document.getElementById('tut-panel').style.display='flex'; tutRender(); }
+function startTutorial(key){ if(!TUTORIALS[key]) return; tutorial={ key, steps:TUTORIALS[key].steps, i:0 }; setRunning(false); const sp=document.getElementById('settings-panel'); if(sp) sp.classList.remove('open'); const tp=document.getElementById('tut-menu-panel'); if(tp) tp.classList.remove('open'); const tb=document.getElementById('tut-menu-btn'); if(tb) tb.classList.remove('active'); const mb=document.getElementById('mtab-tut'); if(mb) mb.classList.remove('active'); document.getElementById('tut-panel').style.display='flex'; tutRender(); }
+function toggleTutMenu(){ const p=document.getElementById('tut-menu-panel'); const open=p.classList.toggle('open'); const b=document.getElementById('tut-menu-btn'); if(b) b.classList.toggle('active',open); const mb=document.getElementById('mtab-tut'); if(mb) mb.classList.toggle('active',open); }
+document.addEventListener('click', (e)=>{ const t=e.target; if(t&&t.matches&&t.matches('#cannon-panel>.tb-label,#motor-panel>.tb-label,#spring-panel>.tb-label')) t.parentElement.classList.toggle('cfg-collapsed'); });
 function tutNext(){ if(!tutorial) return; if(tutorial.i<tutorial.steps.length-1){ tutorial.i++; tutRender(); } else tutClose(); }
 function tutPrev(){ if(!tutorial) return; if(tutorial.i>0){ tutorial.i--; tutRender(); } }
 function tutClose(){ tutorial=null; document.getElementById('tut-panel').style.display='none'; document.getElementById('tut-arrow').style.display='none'; document.querySelectorAll('.tut-glow').forEach(e=>e.classList.remove('tut-glow')); }
