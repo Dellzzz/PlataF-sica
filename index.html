@@ -150,8 +150,8 @@ header{
 .mission-body{ flex:1; display:flex; flex-direction:column; overflow:hidden; }
 .scene{ flex:1; position:relative; overflow:hidden; }
 .controls{ flex-shrink:0; background:var(--panel); padding:14px 20px; }
-.ctrl-row{ display:flex; gap:18px; align-items:flex-start; }
-.ctrl-slider{ flex:1; }
+.ctrl-row{ display:flex; gap:14px 18px; align-items:flex-start; flex-wrap:wrap; }
+.ctrl-slider{ flex:1 1 260px; min-width:220px; }
 .ctrl-label{ display:flex; justify-content:space-between; margin-bottom:5px; font-size:11px; }
 .ctrl-label span:first-child{ color:#888; }
 .ctrl-label .val{ font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; }
@@ -560,6 +560,29 @@ input[type=range]::-webkit-slider-thumb{
 .sq-bar{ height:8px; border-radius:5px; background:rgba(255,255,255,.1); overflow:hidden; }
 .sq-fill{ height:100%; width:0%; border-radius:5px; background:linear-gradient(90deg,#ff6b35,#ffcc00,#00ff9f); transition:width .1s linear; }
 .sq-hold{ text-align:center; font-size:10px; color:#00ff9f; margin-top:4px; min-height:13px; letter-spacing:.04em; }
+
+/* ── knob de foco + layout da missão do telescópio ── */
+.m8-ctrls{ display:flex; flex-direction:column; gap:14px; }
+.m8-top{ display:flex; align-items:center; gap:18px; }
+.knob-wrap{ display:flex; flex-direction:column; align-items:center; gap:7px; flex:0 0 auto; }
+.knob{ position:relative; width:82px; height:82px; touch-action:none; cursor:grab; user-select:none; -webkit-tap-highlight-color:transparent; }
+.knob:active{ cursor:grabbing; }
+.knob-dial{ position:absolute; inset:0; border-radius:50%;
+  background:radial-gradient(circle at 38% 30%,#403619,#15140c 72%);
+  border:2px solid rgba(255,204,0,.55); box-shadow:0 0 16px rgba(255,204,0,.22), inset 0 2px 7px rgba(0,0,0,.75);
+  transform:rotate(-135deg); }
+.knob-ind{ position:absolute; left:50%; top:7px; width:5px; height:26px; transform:translateX(-50%); border-radius:3px;
+  background:linear-gradient(#ffe27a,#ff6b35); box-shadow:0 0 9px rgba(255,204,0,.9); }
+.knob::after{ content:''; position:absolute; inset:-6px; border-radius:50%; border:2px dashed rgba(255,204,0,.18); pointer-events:none; }
+.knob-label{ font-family:'Orbitron',sans-serif; font-size:10px; letter-spacing:.06em; color:#888; text-align:center; }
+.knob-label .val{ font-size:12px; }
+.m8-top .btn-group{ flex:1; max-width:220px; }
+.big-slider input[type=range]{ height:11px; border-radius:6px; }
+.big-slider input[type=range]::-webkit-slider-thumb{ width:26px; height:26px; margin-top:-8px; background:#00d4ff; border:2px solid #fff; box-shadow:0 0 10px rgba(0,212,255,.6); }
+.big-slider input[type=range]::-moz-range-thumb{ width:24px; height:24px; background:#00d4ff; border:2px solid #fff; }
+.big-slider .range-hints{ font-size:10px; color:#3a3a4a; }
+/* dica da missão do observatório */
+.ob1-hint{ font-size:11.5px; color:#9fb0c4; line-height:1.5; text-align:center; margin-bottom:2px; }
 </style>
 </head>
 <body>
@@ -1107,23 +1130,45 @@ input[type=range]::-webkit-slider-thumb{
       </div>
     </div>
     <div class="controls" style="border-top:1px solid rgba(255,204,0,.25)">
-      <div class="ctrl-row">
-        <div class="ctrl-slider">
-          <div class="ctrl-label"><span>🔭 Foco da lente</span><span class="val" id="f8-val" style="color:#ffcc00">—</span></div>
-          <input type="range" id="f8-slider" min="0" max="100" step="1" value="12" style="accent-color:#ffcc00" oninput="onM8Input()">
-          <div class="range-hints"><span>perto</span><span>longe</span></div>
+      <div class="m8-ctrls">
+        <div class="m8-top">
+          <div class="knob-wrap">
+            <div class="knob" id="foco-knob"><div class="knob-dial"><div class="knob-ind"></div></div></div>
+            <div class="knob-label">🔭 FOCO <span class="val" id="f8-val" style="color:#ffcc00">—</span></div>
+          </div>
+          <div class="btn-group">
+            <button class="btn-primary" id="btn-m8-start" style="background:linear-gradient(135deg,#ffcc00,#ff6b35);color:#231a00;box-shadow:0 0 14px rgba(255,204,0,.45)" onclick="startM8()">▶ OBSERVAR</button>
+            <button class="btn-secondary" onclick="resetM8()">↺ Resetar</button>
+          </div>
         </div>
-        <div class="ctrl-slider">
-          <div class="ctrl-label"><span>🎯 Alinhamento</span><span class="val" id="a8-val" style="color:#00d4ff">—</span></div>
+        <div class="ctrl-slider big-slider">
+          <div class="ctrl-label"><span>🎯 Alinhamento do telescópio</span><span class="val" id="a8-val" style="color:#00d4ff">—</span></div>
           <input type="range" id="a8-slider" min="0" max="100" step="1" value="50" style="accent-color:#00d4ff" oninput="onM8Input()">
-          <div class="range-hints"><span>◀ esquerda</span><span>direita ▶</span></div>
+          <div class="range-hints"><span>◀ esquerda</span><span>centro</span><span>direita ▶</span></div>
         </div>
-        <div class="btn-group">
-          <button class="btn-primary" id="btn-m8-start" style="background:linear-gradient(135deg,#ffcc00,#ff6b35);color:#231a00;box-shadow:0 0 14px rgba(255,204,0,.45)" onclick="startM8()">▶ OBSERVAR</button>
-          <button class="btn-secondary" onclick="resetM8()">↺ Resetar</button>
-        </div>
-      </div>
       <div id="result8"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ OBSERVATÓRIO · MISSÃO 1 — O CAMINHO DA LUZ ══════════ -->
+<div id="mob1" class="screen">
+  <div class="mission-body">
+    <div class="scene" id="scene-ob1" style="background:radial-gradient(ellipse at 50% 42%,#0a0a22 0%,#05050f 72%)">
+      <canvas id="cv-ob1" class="arcade-canvas"></canvas>
+      <div class="arcade-hud"><span id="ob1-goal">🪞 espelhos: 0 / 5</span><span style="color:#ff2d78">laser ▸ prisma</span></div>
+      <div class="arcade-center" id="center-ob1">
+        <div class="ac-title" style="color:#ff2d78">O CAMINHO DA LUZ</div>
+        <div class="ac-sub">Gire cada <b>espelho</b> (arraste-o) para o laser passar pelos <b>5</b> e chegar ao <b>prisma</b> no centro — formando um arco-íris. 🌈</div>
+      </div>
+    </div>
+    <div class="controls" style="border-top:1px solid rgba(255,45,120,.25)">
+      <div class="ob1-hint" id="ob1-hint">Arraste os espelhos para girá-los. A luz precisa tocar os 5 antes de atingir o prisma.</div>
+      <div style="display:flex;gap:10px;align-items:stretch">
+        <button class="btn-primary" id="btn-ob1-start" style="flex:1;background:linear-gradient(135deg,#ff2d78,#c44dff);box-shadow:0 0 14px rgba(255,45,120,.45)" onclick="startMOB1()">▶ LIGAR LASER</button>
+        <button class="btn-secondary" style="flex:0 0 130px" onclick="resetMOB1()">↺ Embaralhar</button>
+      </div>
+      <div id="result-ob1"></div>
     </div>
   </div>
 </div>
@@ -1235,7 +1280,7 @@ const BAIRROS = {
     desc:'Ajude o astrônomo a dominar a luz, as lentes e o céu de Physica!',
     bncc:'BNCC EM13CNT · ÓPTICA E ASTRONOMIA',
     missions:[
-      { soon:true, emoji:'🪞', nome:'O Retrovisor',       topic:'Reflexão',          desc:'Onde mirar o espelho para enxergar atrás.',  formula:'î = r̂',           cor:'#ff2d78', dif:'⭐ Iniciante' },
+      { screen:'mob1', emoji:'🌈', nome:'O Caminho da Luz', topic:'Reflexão & Dispersão', desc:'Gire os 5 espelhos para o laser passar por todos e atingir o prisma — formando um arco-íris.', formula:'î = r̂  →  prisma', cor:'#ff2d78', dif:'⭐⭐ Intermediário' },
       { soon:true, emoji:'🏊', nome:'A Piscina Rasa',     topic:'Refração',          desc:'Por que a água parece menos funda.',         formula:'n₁·senî = n₂·senr̂', cor:'#ff2d78', dif:'⭐ Iniciante' },
       { soon:true, emoji:'🔍', nome:'A Lupa',             topic:'Lentes',            desc:'Posicionar a lente para ampliar a pista.',   formula:'1/f = 1/p + 1/p′', cor:'#ff2d78', dif:'⭐⭐ Intermediário' },
       { soon:true, emoji:'👓', nome:'Óculos de Grau',     topic:'Vergência',         desc:'Escolher o grau certo para o paciente.',     formula:'V = 1/f',         cor:'#ff2d78', dif:'⭐⭐ Intermediário' },
@@ -1465,6 +1510,7 @@ const MISSION_INIT = {
   m6: ()=>{ resetM6(); },
   m7: ()=>{ resetM7(); },
   m8: ()=>{ resetM8(); },
+  mob1: ()=>{ resetMOB1(); },
 };
 
 // menu inicial (tela de título)
@@ -2268,15 +2314,14 @@ function m7End(win){
 // ═══════════════════════════════════════
 //  MISSÃO 8 — FOCO NA LUA (telescópio · secreta)
 // ═══════════════════════════════════════
-const M8 = { raf:0, running:false, t0:0, lastT:0, target:55, drift:0, hold:0, quality:0 };
+const M8 = { raf:0, running:false, t0:0, lastT:0, target:55, drift:0, hold:0, quality:0, focus:12 };
 function resetM8(){
   if(M8.raf){ cancelAnimationFrame(M8.raf); M8.raf=0; }
   M8.running=false; M8.hold=0; M8.quality=0; M8.drift=0;
   const moon=document.getElementById('moon8'); if(moon) moon.src=MOON_IMG;
-  document.getElementById('f8-slider').value=12;
   document.getElementById('a8-slider').value=50;
-  document.getElementById('f8-val').textContent='—';
   document.getElementById('a8-val').textContent='—';
+  m8SetFocus(12);
   document.getElementById('sq-val8').textContent='0%';
   document.getElementById('sq-fill8').style.width='0%';
   document.getElementById('sq-hold8').textContent='';
@@ -2287,14 +2332,13 @@ function resetM8(){
   m8Apply(true);
 }
 function onM8Input(){
-  document.getElementById('f8-val').textContent=document.getElementById('f8-slider').value+'%';
   const a=+document.getElementById('a8-slider').value;
   document.getElementById('a8-val').textContent=(a<42?'◀ esq.':a>58?'dir. ▶':'centro');
   if(!M8.running) m8Apply(true);
 }
 function m8Apply(preview){
   const moon=document.getElementById('moon8'), haze=document.getElementById('haze8'); if(!moon) return 0;
-  const f=+document.getElementById('f8-slider').value;
+  const f=M8.focus;
   const a=+document.getElementById('a8-slider').value;
   const aimCenter=50-M8.drift;
   const alignErr=Math.abs(a-aimCenter)/50;
@@ -2368,6 +2412,160 @@ function m8End(el){
   document.addEventListener('keyup',e=>{
     if(currentScreen===5){ if((e.key==='ArrowLeft'||e.key==='a')&&M6.dir<0)M6.dir=0; if((e.key==='ArrowRight'||e.key==='d')&&M6.dir>0)M6.dir=0; }
   });
+})();
+
+// ═══════════════════════════════════════
+//  KNOB DE FOCO (Missão 8 — telescópio)
+// ═══════════════════════════════════════
+function m8KnobAngle(v){ return -135 + (v/100)*270; }
+function m8SetFocus(v){
+  v=Math.max(0,Math.min(100,v)); M8.focus=v;
+  const dial=document.querySelector('#foco-knob .knob-dial');
+  if(dial) dial.style.transform='rotate('+m8KnobAngle(v).toFixed(1)+'deg)';
+  const fv=document.getElementById('f8-val'); if(fv) fv.textContent=Math.round(v)+'%';
+  if(!M8.running) m8Apply(true);
+}
+(function(){
+  const k=document.getElementById('foco-knob'); if(!k) return;
+  let active=false;
+  function center(){ const r=k.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2}; }
+  function val(e){ const c=center(); let deg=Math.atan2(e.clientX-c.x,-(e.clientY-c.y))*180/Math.PI; deg=Math.max(-135,Math.min(135,deg)); return (deg+135)/270*100; }
+  k.addEventListener('pointerdown',e=>{ e.preventDefault(); active=true; try{k.setPointerCapture(e.pointerId);}catch(_){} m8SetFocus(val(e)); });
+  k.addEventListener('pointermove',e=>{ if(!active) return; e.preventDefault(); m8SetFocus(val(e)); });
+  const up=()=>{ active=false; };
+  k.addEventListener('pointerup',up); k.addEventListener('pointercancel',up);
+  k.addEventListener('wheel',e=>{ e.preventDefault(); m8SetFocus(M8.focus+(e.deltaY<0?2:-2)); },{passive:false});
+})();
+
+// ═══════════════════════════════════════
+//  OBSERVATÓRIO · MISSÃO 1 — O CAMINHO DA LUZ (laser · 5 espelhos · prisma)
+// ═══════════════════════════════════════
+const MOB1 = { raf:0, on:false, solved:false, mir:[], drag:-1, hits:0 };
+const OB1_E=[0.06,0.52], OB1_P=[0.50,0.50];
+const OB1_M=[[0.24,0.22],[0.74,0.18],[0.86,0.62],[0.40,0.84],[0.18,0.62]];
+function ob1Canvas(){ const c=document.getElementById('cv-ob1'), s=document.getElementById('scene-ob1'); c.width=s.clientWidth; c.height=s.clientHeight; return c; }
+function ob1Unit(x,y){ const m=Math.hypot(x,y)||1; return {x:x/m,y:y/m}; }
+function ob1Targets(W,H){
+  const pt=i=>({x:OB1_M[i][0]*W,y:OB1_M[i][1]*H});
+  const E={x:OB1_E[0]*W,y:OB1_E[1]*H}, P={x:OB1_P[0]*W,y:OB1_P[1]*H}, t=[];
+  for(let i=0;i<5;i++){
+    const c=pt(i), prev=(i===0?E:pt(i-1)), nxt=(i===4?P:pt(i+1));
+    const inD=ob1Unit(c.x-prev.x,c.y-prev.y), outD=ob1Unit(nxt.x-c.x,nxt.y-c.y);
+    let nx=inD.x-outD.x, ny=inD.y-outD.y;
+    if(Math.hypot(nx,ny)<1e-4){ nx=-inD.y; ny=inD.x; }
+    t.push(Math.atan2(ny,nx)+Math.PI/2);
+  }
+  return t;
+}
+function resetMOB1(){
+  if(MOB1.raf){ cancelAnimationFrame(MOB1.raf); MOB1.raf=0; }
+  MOB1.on=false; MOB1.solved=false; MOB1.drag=-1; MOB1.hits=0;
+  const c=ob1Canvas(), W=c.width, H=c.height, tg=ob1Targets(W,H);
+  MOB1.mir = tg.map(a=> a + (0.4+Math.random()*0.6)*(Math.random()<0.5?1:-1));
+  document.getElementById('ob1-goal').textContent='🪞 espelhos: 0 / 5';
+  document.getElementById('result-ob1').innerHTML='';
+  document.getElementById('center-ob1').classList.remove('hidden');
+  document.getElementById('btn-ob1-start').disabled=false;
+  ob1Draw();
+}
+function startMOB1(){
+  MOB1.on=true;
+  document.getElementById('center-ob1').classList.add('hidden');
+  document.getElementById('btn-ob1-start').disabled=true;
+  if(!MOB1.raf) MOB1.raf=requestAnimationFrame(ob1Loop);
+}
+function ob1Reflect(d,a){ const nx=-Math.sin(a), ny=Math.cos(a), dot=d.x*nx+d.y*ny; return {x:d.x-2*dot*nx, y:d.y-2*dot*ny}; }
+function ob1RaySeg(p,d,s0,s1){
+  const ex=s1.x-s0.x, ey=s1.y-s0.y, v3x=-d.y, v3y=d.x, denom=ex*v3x+ey*v3y;
+  if(Math.abs(denom)<1e-9) return null;
+  const v1x=p.x-s0.x, v1y=p.y-s0.y;
+  const t1=(ex*v1y-ey*v1x)/denom, t2=(v1x*v3x+v1y*v3y)/denom;
+  if(t1>1e-3 && t2>=0 && t2<=1) return t1; return null;
+}
+function ob1RayCircle(p,d,c,r){
+  const fx=p.x-c.x, fy=p.y-c.y, b=2*(fx*d.x+fy*d.y), cc=fx*fx+fy*fy-r*r, a=d.x*d.x+d.y*d.y;
+  let disc=b*b-4*a*cc; if(disc<0) return null; disc=Math.sqrt(disc);
+  const t=(-b-disc)/(2*a); return t>1e-3? t : null;
+}
+function ob1Trace(W,H){
+  const hl=Math.min(W,H)*0.058, prismR=Math.min(W,H)*0.05;
+  const E={x:OB1_E[0]*W,y:OB1_E[1]*H}, P={x:OB1_P[0]*W,y:OB1_P[1]*H};
+  const segs=OB1_M.map((m,i)=>{ const c={x:m[0]*W,y:m[1]*H}, a=MOB1.mir[i];
+    return {c, a, s0:{x:c.x-Math.cos(a)*hl,y:c.y-Math.sin(a)*hl}, s1:{x:c.x+Math.cos(a)*hl,y:c.y+Math.sin(a)*hl}}; });
+  let p={x:E.x,y:E.y}, d=ob1Unit(OB1_M[0][0]*W-E.x, OB1_M[0][1]*H-E.y);
+  const pts=[{x:p.x,y:p.y}], order=[]; let last=-1, reached=false;
+  for(let b=0;b<16;b++){
+    let best=null;
+    for(let i=0;i<5;i++){ if(i===last) continue; const t=ob1RaySeg(p,d,segs[i].s0,segs[i].s1); if(t!==null && (!best||t<best.t)) best={t,kind:'m',i}; }
+    const tp=ob1RayCircle(p,d,P,prismR); if(tp!==null && (!best||tp<best.t)) best={t:tp,kind:'p'};
+    if(!best){ pts.push({x:p.x+d.x*Math.max(W,H)*1.5,y:p.y+d.y*Math.max(W,H)*1.5}); break; }
+    const hit={x:p.x+d.x*best.t,y:p.y+d.y*best.t}; pts.push(hit);
+    if(best.kind==='p'){ reached=true; break; }
+    if(order.indexOf(best.i)<0) order.push(best.i);
+    last=best.i; d=ob1Reflect(d,segs[best.i].a); p=hit;
+  }
+  return {pts,order,reached,segs,prismR,P,E,hl};
+}
+function ob1Draw(){
+  const c=document.getElementById('cv-ob1'); if(!c) return; const x=c.getContext('2d'), W=c.width, H=c.height;
+  x.clearRect(0,0,W,H);
+  const tr=ob1Trace(W,H), hitSet=new Set(tr.order), P=tr.P, pr=tr.prismR;
+  if(MOB1.solved){
+    const cols=['#ff2d78','#ff6b35','#ffcc00','#00ff9f','#00d4ff','#5b6bff','#c44dff'];
+    for(let i=0;i<cols.length;i++){ const a=-Math.PI/2+(i-3)*0.13; x.strokeStyle=cols[i]; x.lineWidth=5; x.globalAlpha=.85;
+      x.beginPath(); x.moveTo(P.x,P.y); x.lineTo(P.x+Math.cos(a)*Math.max(W,H),P.y+Math.sin(a)*Math.max(W,H)); x.stroke(); }
+    x.globalAlpha=1;
+  }
+  if(MOB1.on){
+    x.save(); x.shadowColor='#ff2d78'; x.shadowBlur=14; x.strokeStyle='#ff5a9a'; x.lineWidth=3; x.lineCap='round';
+    x.beginPath(); x.moveTo(tr.pts[0].x,tr.pts[0].y); for(let i=1;i<tr.pts.length;i++) x.lineTo(tr.pts[i].x,tr.pts[i].y); x.stroke(); x.restore();
+  }
+  // prisma
+  x.save(); x.translate(P.x,P.y); x.beginPath();
+  for(let i=0;i<3;i++){ const a=-Math.PI/2+i*2*Math.PI/3, px=Math.cos(a)*pr, py=Math.sin(a)*pr; i?x.lineTo(px,py):x.moveTo(px,py); }
+  x.closePath(); x.fillStyle=MOB1.solved?'rgba(255,255,255,.92)':'rgba(180,200,255,.32)';
+  x.strokeStyle=MOB1.solved?'#fff':'rgba(120,160,255,.7)'; x.lineWidth=2; if(MOB1.solved){ x.shadowColor='#fff'; x.shadowBlur=18; } x.fill(); x.stroke(); x.restore();
+  // espelhos
+  for(let i=0;i<5;i++){ const s=tr.segs[i], on=hitSet.has(i);
+    x.save(); x.translate(s.c.x,s.c.y); x.rotate(s.a);
+    x.fillStyle=on?'#bfeaff':'#9fb4cc'; x.strokeStyle=on?'#00d4ff':'rgba(150,180,220,.6)'; x.lineWidth=2;
+    if(on){ x.shadowColor='#00d4ff'; x.shadowBlur=12; }
+    roundRectM7(x,-tr.hl,-5,tr.hl*2,10,4); x.fill(); x.stroke(); x.restore();
+    x.fillStyle=on?'#00d4ff':'rgba(160,190,230,.55)';
+    x.beginPath(); x.arc(s.s0.x,s.s0.y,3.5,0,7); x.fill();
+    x.beginPath(); x.arc(s.s1.x,s.s1.y,3.5,0,7); x.fill();
+  }
+  // emissor
+  const E=tr.E; x.save(); x.translate(E.x,E.y); x.fillStyle='#2a1020'; x.strokeStyle='#ff2d78'; x.lineWidth=2;
+  roundRectM7(x,-16,-12,30,24,5); x.fill(); x.stroke();
+  x.fillStyle='#ff5a9a'; x.shadowColor='#ff2d78'; x.shadowBlur=10; x.beginPath(); x.arc(13,0,4,0,7); x.fill(); x.restore();
+  MOB1.hits=hitSet.size;
+  const g=document.getElementById('ob1-goal'); if(g) g.textContent='🪞 espelhos: '+MOB1.hits+' / 5';
+  if(MOB1.on && !MOB1.solved && tr.reached && hitSet.size===5) ob1Win();
+}
+function ob1Loop(){
+  const el=document.getElementById('mob1');
+  if(!el || !el.classList.contains('active')){ MOB1.raf=0; return; }
+  ob1Draw();
+  MOB1.raf=requestAnimationFrame(ob1Loop);
+}
+function ob1Win(){
+  MOB1.solved=true;
+  document.getElementById('result-ob1').innerHTML=resultBanner(3,
+    'Arco-íris formado! 🌈',
+    'A luz <strong>refletiu</strong> em cada espelho (î = r̂) e, ao atravessar o <strong>prisma</strong>, sofreu <strong>dispersão</strong>: cada cor desvia de forma diferente e se separa.',
+    '#ff2d78');
+  completeMission('observatorio', 0, 3);
+}
+(function(){
+  const c=document.getElementById('cv-ob1'); if(!c) return;
+  function rel(e){ const r=c.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; }
+  function pick(p){ const W=c.width,H=c.height,gr=Math.min(W,H)*0.12; let bi=-1,bd=gr;
+    for(let i=0;i<5;i++){ const cx=OB1_M[i][0]*W, cy=OB1_M[i][1]*H, d=Math.hypot(p.x-cx,p.y-cy); if(d<bd){bd=d;bi=i;} } return bi; }
+  c.addEventListener('pointerdown',e=>{ if(!MOB1.on||MOB1.solved) return; const i=pick(rel(e)); if(i>=0){ MOB1.drag=i; try{c.setPointerCapture(e.pointerId);}catch(_){} e.preventDefault(); } });
+  c.addEventListener('pointermove',e=>{ if(MOB1.drag<0) return; e.preventDefault(); const p=rel(e), W=c.width, H=c.height, cx=OB1_M[MOB1.drag][0]*W, cy=OB1_M[MOB1.drag][1]*H; MOB1.mir[MOB1.drag]=Math.atan2(p.y-cy,p.x-cx); ob1Draw(); });
+  const up=()=>{ MOB1.drag=-1; };
+  c.addEventListener('pointerup',up); c.addEventListener('pointercancel',up);
 })();
 
 // ═══════════════════════════════════════
